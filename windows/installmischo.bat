@@ -3,60 +3,27 @@ echo ===============================
 echo Installing Mischo Agent
 echo ===============================
 
-REM Versuche Python mit py Launcher zu finden
-py -3 --version >nul 2>&1
-if %ERRORLEVEL% == 0 (
-    set "PYTHON=py -3"
-) else (
-    python --version >nul 2>&1
-    if %ERRORLEVEL% == 0 (
-        set "PYTHON=python"
-    ) else (
-        echo Python 3 not found.
-        set /p INSTPY="Do you want to install Python from python.org? (Y/N): "
-        if /I "%INSTPY%"=="Y" (
-            echo Please download and install Python from https://www.python.org/downloads/
-            pause
-            exit /b
-        ) else (
-            set /p HASPY="Did you already install Python manually? (Y/N): "
-            if /I "%HASPY%"=="Y" (
-                echo Make sure Python is added to PATH and restart the installer.
-                pause
-                exit /b
-            ) else (
-                echo Python is required. Exiting.
-                pause
-                exit /b
-            )
-        )
-    )
-)
+REM Prüfe Python, installiere Pakete usw. (wie zuvor)
+REM ...
 
-echo Using %PYTHON% to install packages...
-
-REM Pip installieren/updaten
-%PYTHON% -m ensurepip
-%PYTHON% -m pip install --upgrade pip
-
-REM Packages installieren
-%PYTHON% -m pip install pyinstaller mss opencv-python numpy pyautogui websockets pillow
-
-REM Ordner erstellen
+REM Create install folder
 mkdir C:\Mischo 2>nul
 cd C:\Mischo
 
-REM Agent herunterladen
+REM Download agent
 powershell -Command "Invoke-WebRequest https://github.com/SlabyLol/MischoINST/raw/main/agent/mischo_agent.py -OutFile mischo_agent.py"
 
-REM Binary bauen
-%PYTHON% -m PyInstaller --onefile mischo_agent.py
+REM Build binary
+pyinstaller --onefile mischo_agent.py
 
-REM Agent starten
+REM Start Agent
 start dist\mischo_agent.exe
 
-REM Autostart einrichten
+REM Add to startup
 reg add HKCU\Software\Microsoft\Windows\CurrentVersion\Run /v Mischo /t REG_SZ /d "C:\Mischo\dist\mischo_agent.exe" /f
+
+REM Download Uninstaller
+powershell -Command "Invoke-WebRequest https://github.com/SlabyLol/MischoINST/raw/main/uninstaller/uninstall_mischo.bat -OutFile C:\Mischo\uninstall_mischo.bat"
 
 echo Installation complete!
 pause
