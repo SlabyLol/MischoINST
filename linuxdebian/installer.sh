@@ -1,29 +1,51 @@
-@echo off
-echo ===============================
-echo Installing Mischo Agent
-echo ===============================
+#!/bin/bash
+echo "==============================="
+echo "Installing Mischo Agent"
+echo "==============================="
 
-REM Prüfe Python, installiere Pakete usw. (wie zuvor)
-REM ...
+while ! command -v python3 &>/dev/null; do
+    read -p "Python 3 is not installed. Install? (Y/N): " INSTALL
+    case "$INSTALL" in
+        [Yy]* ) sudo apt update && sudo apt install -y python3 python3-pip python3-venv ;;
+        [Nn]* ) read -p "Already installed? (Y/N): " ALREADY
+               [[ "$ALREADY" =~ [Yy] ]] || { echo "Python required. Exiting."; exit 1; } ;;
+        * ) echo "Please answer Y or N." ;;
+    esac
+done
 
-REM Create install folder
-mkdir C:\Mischo 2>nul
-cd C:\Mischo
+PYTHON=python3
 
-REM Download agent
-powershell -Command "Invoke-WebRequest https://github.com/SlabyLol/MischoINST/raw/main/agent/mischo_agent.py -OutFile mischo_agent.py"
+$PYTHON -m pip install --upgrade pip
+$PYTHON -m pip install pyinstaller mss opencv-python numpy pyautogui websockets pillow
 
-REM Build binary
+AGENT_DIR="$HOME/.mischo"
+mkdir -p "$AGENT_DIR"
+cd "$AGENT_DIR"
+
+wget https://github.com/SlabyLol/MischoINST/raw/main/agent/mischo_agent.py -O mischo_agent.py
+
 pyinstaller --onefile mischo_agent.py
+chmod +x dist/mischo_agent
 
-REM Start Agent
-start dist\mischo_agent.exe
+mkdir -p ~/.config/systemd/user
+cat <<EOF > ~/.config/systemd/user/mischo.service
+[Unit]
+Description=Mischo Remote Agent
 
-REM Add to startup
-reg add HKCU\Software\Microsoft\Windows\CurrentVersion\Run /v Mischo /t REG_SZ /d "C:\Mischo\dist\mischo_agent.exe" /f
+[Service]
+ExecStart=$AGENT_DIR/dist/mischo_agent
+Restart=always
 
-REM Download Uninstaller
-powershell -Command "Invoke-WebRequest https://github.com/SlabyLol/MischoINST/raw/main/uninstaller/uninstall_mischo.bat -OutFile C:\Mischo\uninstall_mischo.bat"
+[Install]
+WantedBy=default.target
+EOF
 
-echo Installation complete!
-pause
+systemctl --user daemon-reload
+systemctl --user enable mischo
+systemctl --user start mischo
+
+wget https://github.com/SlabyLol/MischoINST/raw/main/uninstaller/uninstall_mischo.sh -O "$AGENT_DIR/uninstall_mischo.sh"
+chmod +x "$AGENT_DIR/uninstall_mischo.sh"
+
+echo "Mischo Agent installed and running!"
+echo "To uninstall, run $AGENT_DIR/uninstall_mischo.sh"
