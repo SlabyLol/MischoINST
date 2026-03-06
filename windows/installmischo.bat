@@ -3,21 +3,30 @@ echo ===============================
 echo Installing Mischo Agent
 echo ===============================
 
-REM Detect Python
+:CHECKPYTHON
 python --version >nul 2>&1
 if %ERRORLEVEL% neq 0 (
-    python3 --version >nul 2>&1
-    if %ERRORLEVEL% neq 0 (
-        echo Python 3.11+ not found. Please install it and add to PATH.
+    echo Python 3.11+ is not found.
+    set /p INSTPY="Do you want to install Python? (Y/N): "
+    if /I "%INSTPY%"=="Y" (
+        echo Please download and install Python from https://www.python.org/downloads/
         pause
         exit /b
+    ) else (
+        set /p HASPY="Did you already install Python? (Y/N): "
+        if /I "%HASPY%"=="Y" (
+            goto CHECKPYTHON
+        ) else (
+            echo Python is required. Exiting.
+            pause
+            exit /b
+        )
     )
-    set PYTHON=python3
 ) else (
     set PYTHON=python
 )
 
-echo Using %PYTHON% to install packages.
+echo Using %PYTHON% to install packages...
 
 REM Ensure pip
 %PYTHON% -m ensurepip
