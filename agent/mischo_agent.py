@@ -9,6 +9,7 @@ import base64
 import json
 import os
 import sys
+import socket
 
 try:
     from cryptography import x509
@@ -23,6 +24,7 @@ except ImportError:
 CERT_FILE = "cert.pem"
 KEY_FILE = "key.pem"
 
+# Zertifikat erstellen, falls nicht vorhanden
 if not os.path.exists(CERT_FILE) or not os.path.exists(KEY_FILE):
     print("Generating self-signed certificate in Python...")
     key = rsa.generate_private_key(public_exponent=65537, key_size=2048)
@@ -32,7 +34,6 @@ if not os.path.exists(CERT_FILE) or not os.path.exists(KEY_FILE):
             format=serialization.PrivateFormat.TraditionalOpenSSL,
             encryption_algorithm=serialization.NoEncryption()
         ))
-
     subject = issuer = x509.Name([
         x509.NameAttribute(NameOID.COUNTRY_NAME, u"US"),
         x509.NameAttribute(NameOID.STATE_OR_PROVINCE_NAME, u"State"),
@@ -45,7 +46,6 @@ if not os.path.exists(CERT_FILE) or not os.path.exists(KEY_FILE):
         .not_valid_before(datetime.utcnow()).not_valid_after(datetime.utcnow()+timedelta(days=365))\
         .add_extension(x509.SubjectAlternativeName([x509.DNSName(u"localhost")]), critical=False)\
         .sign(key, hashes.SHA256())
-    
     with open(CERT_FILE, "wb") as f:
         f.write(cert.public_bytes(serialization.Encoding.PEM))
     print("Self-signed certificate generated successfully.")
@@ -53,6 +53,24 @@ if not os.path.exists(CERT_FILE) or not os.path.exists(KEY_FILE):
 ssl_context = ssl.SSLContext(ssl.PROTOCOL_TLS_SERVER)
 ssl_context.load_cert_chain(certfile=CERT_FILE, keyfile=KEY_FILE)
 
+# -----------------------------
+# IP-Erkennung
+# -----------------------------
+def get_ip():
+    s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+    try:
+        # Verbindung zu einem öffentlichen DNS, um lokale IP zu erkennen
+        s.connect(("8.8.8.8", 80))
+        ip = s.getsockname()[0]
+    except Exception:
+        ip = "YOUR-IP"
+    finally:
+        s.close()
+    return ip
+
+# -----------------------------
+# WebSocket Handler
+# -----------------------------
 async def handler(ws):
     async for msg in ws:
         try:
@@ -77,10 +95,15 @@ async def handler(ws):
         except Exception as e:
             print("Error handling message:", e)
 
+# -----------------------------
+# Server starten
+# -----------------------------
 async def main():
-    print("Mischo Agent starting on port 8080...")
+    ip = get_ip()
+    print(f"Mischo Agent starting on port 8080...")
+    print(f"Connect via WSS at: wss://{ip}:8080")
     async with websockets.serve(handler, "0.0.0.0", 8080, ssl=ssl_context):
-        await asyncio.Future()
+        await asyncio.Future()  # Run forever
 
 if __name__=="__main__":
     try:
