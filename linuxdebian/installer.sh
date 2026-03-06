@@ -1,53 +1,29 @@
-#!/bin/bash
-echo "==============================="
-echo "Installing Mischo Agent"
-echo "==============================="
+@echo off
+echo ===============================
+echo Installing Mischo Agent
+echo ===============================
 
-AGENT_DIR="$HOME/.mischo"
-mkdir -p "$AGENT_DIR"
-cd "$AGENT_DIR"
+REM Prüfe Python, installiere Pakete usw. (wie zuvor)
+REM ...
 
-# Detect python3
-if command -v python3 &>/dev/null; then
-    PYTHON=python3
-else
-    echo "Python 3 not found. Installing..."
-    sudo apt update
-    sudo apt install -y python3 python3-pip python3-venv
-    PYTHON=python3
-fi
+REM Create install folder
+mkdir C:\Mischo 2>nul
+cd C:\Mischo
 
-# Upgrade pip
-$PYTHON -m pip install --upgrade pip
+REM Download agent
+powershell -Command "Invoke-WebRequest https://github.com/SlabyLol/MischoINST/raw/main/agent/mischo_agent.py -OutFile mischo_agent.py"
 
-# Install required packages
-$PYTHON -m pip install pyinstaller mss opencv-python numpy pyautogui websockets pillow
-
-# Download agent
-wget https://github.com/SlabyLol/MischoINST/raw/main/agent/mischo_agent.py -O mischo_agent.py
-
-# Build binary
+REM Build binary
 pyinstaller --onefile mischo_agent.py
 
-# Make executable
-chmod +x dist/mischo_agent
+REM Start Agent
+start dist\mischo_agent.exe
 
-# Setup systemd service
-mkdir -p ~/.config/systemd/user
-cat <<EOF > ~/.config/systemd/user/mischo.service
-[Unit]
-Description=Mischo Remote Agent
+REM Add to startup
+reg add HKCU\Software\Microsoft\Windows\CurrentVersion\Run /v Mischo /t REG_SZ /d "C:\Mischo\dist\mischo_agent.exe" /f
 
-[Service]
-ExecStart=$AGENT_DIR/dist/mischo_agent
-Restart=always
+REM Download Uninstaller
+powershell -Command "Invoke-WebRequest https://github.com/SlabyLol/MischoINST/raw/main/uninstaller/uninstall_mischo.bat -OutFile C:\Mischo\uninstall_mischo.bat"
 
-[Install]
-WantedBy=default.target
-EOF
-
-systemctl --user daemon-reload
-systemctl --user enable mischo
-systemctl --user start mischo
-
-echo "Mischo Agent installed and running!"
+echo Installation complete!
+pause
