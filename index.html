@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Mischo Remote Desktop</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        body { font-family: Arial, sans-serif; max-width: 900px; margin: auto; padding: 2em; background-color: #f0f2f5; }
+        h1, h2 { color: #222; }
+        pre { background-color: #eee; padding: 1em; border-radius: 6px; overflow-x: auto; }
+        a.button { display: inline-block; padding: 10px 20px; margin-top: 1em; background-color: #007bff; color: #fff; text-decoration: none; border-radius: 6px; }
+        a.button:hover { background-color: #0056b3; }
+    </style>
+</head>
+<body>
+    <h1>Mischo Remote Desktop</h1>
+    <p>Control your Windows or Linux machine remotely through a browser with Mischo.</p>
+
+    <h2>Download & Installation</h2>
+
+    <h3>Windows</h3>
+    <ol>
+        <li>Download the installer: <a class="button" href="https://github.com/SlabyLol/MischoINST/raw/main/windows/installmischo.bat" target="_blank">installmischo.bat</a></li>
+        <li>Run the installer. It will download the Python script, install packages, build the agent binary, set autostart, and launch it.</li>
+    </ol>
+
+    <h3>Linux / Debian / Raspberry Pi OS</h3>
+    <ol>
+        <li>Download the installer: <a class="button" href="https://github.com/SlabyLol/MischoINST/raw/main/linuxdebian/installer.sh" target="_blank">installer.sh</a></li>
+        <li>Run the installer: <pre>bash installer.sh</pre></li>
+    </ol>
+
+    <h2>Connecting to Mischo</h2>
+    <p>Open your browser and enter the IP of the device running Mischo Agent with port 8080:</p>
+    <pre>http://100.125.128.6:8080</pre>
+
+    <h2>GitHub Repository</h2>
+    <p>All files and installers are available here:</p>
+    <a class="button" href="https://github.com/SlabyLol/MischoINST" target="_blank">Go to MischoINST</a>
+</body>
+</html>
