@@ -3,7 +3,9 @@ echo ===============================
 echo Installing Mischo Agent
 echo ===============================
 
+REM ------------------------
 REM 1. Python prüfen
+REM ------------------------
 py -3 --version >nul 2>&1
 if %ERRORLEVEL% == 0 (
     set "PYTHON=py -3"
@@ -34,28 +36,44 @@ if %ERRORLEVEL% == 0 (
 )
 
 echo Using %PYTHON% to install packages...
+
+REM ------------------------
+REM 2. Pip & Pakete
+REM ------------------------
 %PYTHON% -m ensurepip
 %PYTHON% -m pip install --upgrade pip
-%PYTHON% -m pip install pyinstaller mss opencv-python numpy pyautogui websockets pillow
+%PYTHON% -m pip install pyinstaller pyautogui mss opencv-python numpy websockets pillow cryptography
 
-REM Installationsordner
+REM ------------------------
+REM 3. Installationsordner
+REM ------------------------
 set "INSTALL_DIR=C:\Mischo"
 mkdir "%INSTALL_DIR%" 2>nul
 cd /d "%INSTALL_DIR%"
 
-REM Agent herunterladen
+REM ------------------------
+REM 4. Agent herunterladen
+REM ------------------------
 powershell -Command "Invoke-WebRequest https://github.com/SlabyLol/MischoINST/raw/main/agent/mischo_agent.py -OutFile mischo_agent.py"
 
-REM Binary bauen
+REM ------------------------
+REM 5. Binary bauen
+REM ------------------------
 %PYTHON% -m PyInstaller --onefile mischo_agent.py
 
-REM Agent starten
+REM ------------------------
+REM 6. Agent starten
+REM ------------------------
 start dist\mischo_agent.exe
 
-REM Autostart einrichten
+REM ------------------------
+REM 7. Autostart einrichten
+REM ------------------------
 reg add HKCU\Software\Microsoft\Windows\CurrentVersion\Run /v Mischo /t REG_SZ /d "%INSTALL_DIR%\dist\mischo_agent.exe" /f
 
-REM Uninstaller herunterladen
+REM ------------------------
+REM 8. Uninstaller herunterladen
+REM ------------------------
 powershell -Command "Invoke-WebRequest https://github.com/SlabyLol/MischoINST/raw/main/uninstaller/uninstall_mischo.bat -OutFile %INSTALL_DIR%\uninstall_mischo.bat"
 
 echo Installation complete!
