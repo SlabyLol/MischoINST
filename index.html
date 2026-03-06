@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Mischo Remote Desktop</title>
+    <title>MischoINST Installation Guide</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <style>
         body { font-family: Arial, sans-serif; max-width: 900px; margin: auto; padding: 2em; background-color: #f0f2f5; }
@@ -10,32 +10,55 @@
         pre { background-color: #eee; padding: 1em; border-radius: 6px; overflow-x: auto; }
         a.button { display: inline-block; padding: 10px 20px; margin-top: 1em; background-color: #007bff; color: #fff; text-decoration: none; border-radius: 6px; }
         a.button:hover { background-color: #0056b3; }
+        footer { margin-top:2em; font-size:0.9em; color:#555; }
     </style>
 </head>
 <body>
-    <h1>Mischo Remote Desktop</h1>
+    <h1>Mischo Remote Desktop Installation Guide</h1>
     <p>Control your Windows or Linux machine remotely through a browser with Mischo.</p>
 
     <h2>Download & Installation</h2>
 
     <h3>Windows</h3>
     <ol>
-        <li>Download the installer: <a class="button" href="https://github.com/SlabyLol/MischoINST/raw/main/windows/installmischo.bat" target="_blank">installmischo.bat</a></li>
-        <li>Run the installer. It will download the Python script, install packages, build the agent binary, set autostart, and launch it.</li>
+        <li>Download the installer:
+            <a class="button" href="https://github.com/SlabyLol/MischoINST/raw/main/windows/installmischo.bat" download>Download Windows Installer</a>
+        </li>
+        <li>Run the installer. It will:
+            <ul>
+                <li>Download the Python agent script</li>
+                <li>Install required Python packages</li>
+                <li>Build the Mischo Agent binary</li>
+                <li>Set it to start automatically</li>
+                <li>Launch the agent immediately</li>
+            </ul>
+        </li>
     </ol>
 
     <h3>Linux / Debian / Raspberry Pi OS</h3>
     <ol>
-        <li>Download the installer: <a class="button" href="https://github.com/SlabyLol/MischoINST/raw/main/linuxdebian/installer.sh" target="_blank">installer.sh</a></li>
-        <li>Run the installer: <pre>bash installer.sh</pre></li>
+        <li>Download the installer:
+            <a class="button" href="https://github.com/SlabyLol/MischoINST/raw/main/linuxdebian/installer.sh" download>Download Linux Installer</a>
+        </li>
+        <li>Run the installer in terminal:
+            <pre>bash installer.sh</pre>
+            The installer will do the same steps as Windows: download agent, install packages, build binary, setup autostart, and launch the agent.
+        </li>
     </ol>
 
     <h2>Connecting to Mischo</h2>
-    <p>Open your browser and enter the IP of the device running Mischo Agent with port 8080:</p>
-    <pre>http://100.125.128.6:8080</pre>
+    <p>After installation, open your browser and enter the IP of the device running Mischo Agent with port 8080:</p>
+    <pre>http://YOUR-IP:8080</pre>
+    <p>Replace <code>YOUR-IP</code> with the actual IP of your machine.</p>
+
+    <h2>Browser Remote Control</h2>
+    <p>You can also use the web frontend to control the remote machine:</p>
+    <pre>Open your browser → enter the agent IP → view screen & control mouse/keyboard</pre>
 
     <h2>GitHub Repository</h2>
     <p>All files and installers are available here:</p>
-    <a class="button" href="https://github.com/SlabyLol/MischoINST" target="_blank">Go to MischoINST</a>
+    <a class="button" href="https://github.com/SlabyLol/MischoINST" target="_blank">Go to MischoINST Repo</a>
+
+    <footer>&copy; DarkFox Co. 2026</footer>
 </body>
 </html>
